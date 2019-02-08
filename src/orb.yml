@@ -1,0 +1,254 @@
+version: '2.1'
+
+description: "Build and deploy Elixir software"
+
+examples:
+  build:
+    description: "Build Elixir source code with tests and deploy"
+    usage:
+      version: 2.1
+      orbs:
+        elixir: coletiv/elixir@1.0.0
+      jobs:
+        build-and-test:
+          executor: default
+          steps:
+            - elixir/build
+
+            # FUTURE: This only need to run if the job is a PULL REQUEST, but the feature isn't available yet
+            # https://discuss.circleci.com/t/use-environment-variables-in-parameters/26314/5
+            - elixir/check-format
+            - elixir/coveralls
+            - elixir/credo
+            - elixir/dialyzer
+
+        deploy-dev:
+          executor: default
+          steps:
+            # Support multiple env deploy
+            - elixir/setup_deploy:
+                ip: "10.0.23.45"
+                encrypted_ssh_private_key_file_path: ".encrypted/dev_private_key.pem"
+                config_file_path: ".deliver/dev_config"
+
+            - elixir/deploy:
+                branch: develop
+
+            - elixir/appsignal-send-marker:
+                api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
+                name: "MyApp"
+                env: "dev"
+
+        deploy-prod:
+          executor: default
+          steps:
+            - elixir/setup_deploy:
+                ip: "10.0.23.45"
+                encrypted_ssh_private_key_file_path: ".encrypted/dev_private_key.pem"
+                config_file_path: ".deliver/dev_config"
+
+            - elixir/deploy:
+                branch: master
+
+            - elixir/appsignal-send-marker:
+                api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
+                name: "MyApp"
+                env: "prod"
+
+      workflows:
+        elixir-build-deploy-example:
+          jobs:
+            - build-and-test:
+                filters:
+                  branches:
+                    ignore:
+                      - master
+                      - develop
+
+            - deploy-dev:
+                requires:
+                  - build-and-test
+                filters:
+                  branches:
+                    only:
+                      - develop
+
+            - deploy-prod:
+                required:
+                  - build-and-test
+                filters:
+                  branches:
+                    only:
+                      - master
+
+executors:
+  default:
+    docker:
+      - image: circleci/elixir:1.7.3
+        environment:
+          MIX_ENV: test
+      - image: circleci/postgres:10.1-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: app_test
+          POSTGRES_PASSWORD:
+
+commands:
+  build:
+    description: "Build Elixir source code"
+    parameters:
+      cache-version:
+        type: string
+        description: "String key to store cache in"
+        default: "v1"
+    steps:
+      - checkout
+
+      # Restore "deps" cache
+      - restore_cache:
+          keys:
+            # TODO: Add project name to cache ?
+            - << parameters.cache-version >>-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+            - << parameters.cache-version >>-mix-cache-{{ .Branch }}
+            - << parameters.cache-version >>-mix-cache
+
+      # Restore "build" cache
+      - restore_cache:
+          keys:
+            - << parameters.cache-version >>-build-cache-{{ .Branch }}
+            - << parameters.cache-version >>-build-cache
+
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+
+      # NOTE: Mix will recompile Erlang files, even if we cache them:
+      # > https://elixirforum.com/t/how-to-cache-erlang-builds-on-ci/14789/15
+      - run: mix do deps.get, compile
+
+      # Cache "deps" folder
+      - save_cache:
+          key: << parameters.cache-version >>-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+          paths: "deps"
+      - save_cache:
+          key: << parameters.cache-version >>-mix-cache-{{ .Branch }}
+          paths: "deps"
+      - save_cache:
+          key: << parameters.cache-version >>-mix-cache
+          paths: "deps"
+
+  test:
+    description: "Test Elixir source code"
+    steps:
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Execute tests
+          command: mix test
+
+  credo:
+    description: "Static analysis to Elixir source code"
+    steps:
+      - run: mix credo
+
+  coveralls:
+    description: "Test Elixir code coverage"
+    steps:
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Execute tests
+          command: mix coveralls
+
+  check-format:
+    description: "Check that all Elixir code is formated"
+    steps:
+      - run: mix format --check-formatted
+
+  dialyzer:
+    description: "Static code analysis tool"
+    parameters:
+      cache-version:
+        type: string
+        description: String key to store cache in
+        default: "v1"
+      format:
+        type: string
+        description: Formatting the errors
+        default: "short"
+    steps:
+      # Restore Cache
+      - restore_cache:
+          keys:
+            - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+
+      - run: mix dialyzer --format << parameters.format >>
+
+      # Save Cache
+      - save_cache:
+          key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+          paths: "~/.mix"
+
+  # TODO: This seems to specific, maybe move to another orb ?
+
+  # Appsginal
+  appsignal-send-marker:
+    description: "Notify AppSignal that a new version was deployed"
+    parameters:
+      api_key:
+        type: string
+        description: AppSignal API Key
+      app_name:
+        type: string
+        description: Application name
+      env:
+        type: string
+        description: Environment
+        default: "dev"
+    steps:
+      - run: |
+          curl -X POST \
+            "https://push.appsignal.com/1/markers?api_key=<< parameters.api_key >>&name=<< parameters.app_name >>&environment=<< parameters.env >>" \
+            -H 'cache-control: no-cache' \
+            -H 'content-type: application/json' \
+            -d "{
+            \"revision\":\"${CIRCLE_SHA1}\",
+            \"repository\":\"${CIRCLE_BRANCH}\",
+            \"user\":\"${CIRCLE_USERNAME}\"
+          }"
+
+  # TODO: Split this into another orb (elixir-deploy) ?
+  # The following two commands are specific to edeliver deploy. Should be in another orb ?
+
+  setup_deploy:
+    description: "Setup .deliver/config file."
+    parameters:
+      ip:
+        description: "IP Address of the deploy machine"
+        type: string
+      config_file_path:
+        type: string
+        description: "eDeliver config file path"
+      encrypted_ssh_private_key_file_path:
+        type: string
+        description: "SSH Private Key file path"
+    steps:
+      - run: printf "Host << parameters.ip >>\r\n\tIdentityFile ~/.ssh/private_key.pem" >> "$HOME/.ssh/config"
+      - run: openssl aes-256-cbc -pass "pass:$SSH_KEY_PASSWORD" -in << parameters.encrypted_ssh_private_key_file_path >> -out ~/.ssh/private_key.pem -d -a
+      - run: chmod 600 ~/.ssh/private_key.pem
+      - run: rm -rf .deliver/config
+      - run: cp << parameters.config_file_path >> .deliver/config
+
+  # TODO: Only deploy if
+  deploy:
+    description: ""
+    parameters:
+      branch:
+        type: string
+        description: String key to store cache in
+        default: "v1"
+    steps:
+      - run: mix edeliver build release --branch=<< parameters.branch >>
+      - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
+      - run: mix edeliver migrate --branch=<< parameters.branch >>
