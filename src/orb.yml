@@ -183,7 +183,7 @@ commands:
           keys:
             - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
 
-      - run: mix dialyzer --format << parameters.format >>
+      - run: mix dialyzer --halt-exit-status --format << parameters.format >>
 
       # Save Cache
       - save_cache:
