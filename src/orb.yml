@@ -83,11 +83,20 @@ examples:
 
 executors:
   default:
+    description: |
+      Linux image with necessary tools to compile elixir code.
+    parameters:
+      elixir-version:
+        type: string
+        default: 1.7.3
+      postgres-version:
+        type: string
+        default: 10.1-alpine
     docker:
-      - image: circleci/elixir:1.7.3
+      - image: circleci/elixir:<< parameters.elixir-version >>
         environment:
           MIX_ENV: test
-      - image: circleci/postgres:10.1-alpine
+      - image: circleci/postgres:<< parameters.postgres-version >>
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: app_test
