@@ -26,13 +26,9 @@ examples:
           executor: default
           steps:
             # Support multiple env deploy
-            - elixir/setup_deploy:
-                ip: "10.0.23.45"
-                encrypted_ssh_private_key_file_path: ".encrypted/dev_private_key.pem"
-                config_file_path: ".deliver/dev_config"
-
             - elixir/deploy:
                 branch: develop
+                config_file: '.deliver/config_dev'
 
             - elixir/appsignal-send-marker:
                 api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
@@ -42,13 +38,9 @@ examples:
         deploy-prod:
           executor: default
           steps:
-            - elixir/setup_deploy:
-                ip: "10.0.23.45"
-                encrypted_ssh_private_key_file_path: ".encrypted/dev_private_key.pem"
-                config_file_path: ".deliver/dev_config"
-
             - elixir/deploy:
                 branch: master
+                config_file: '.deliver/config_prod'
 
             - elixir/appsignal-send-marker:
                 api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
@@ -230,34 +222,19 @@ commands:
   # TODO: Split this into another orb (elixir-deploy) ?
   # The following two commands are specific to edeliver deploy. Should be in another orb ?
 
-  setup_deploy:
-    description: "Setup .deliver/config file."
-    parameters:
-      ip:
-        description: "IP Address of the deploy machine"
-        type: string
-      config_file_path:
-        type: string
-        description: "eDeliver config file path"
-      encrypted_ssh_private_key_file_path:
-        type: string
-        description: "SSH Private Key file path"
-    steps:
-      - run: printf "Host << parameters.ip >>\r\n\tIdentityFile ~/.ssh/private_key.pem" >> "$HOME/.ssh/config"
-      - run: openssl aes-256-cbc -pass "pass:$SSH_KEY_PASSWORD" -in << parameters.encrypted_ssh_private_key_file_path >> -out ~/.ssh/private_key.pem -d -a
-      - run: chmod 600 ~/.ssh/private_key.pem
-      - run: rm -rf .deliver/config
-      - run: cp << parameters.config_file_path >> .deliver/config
-
-  # TODO: Only deploy if
   deploy:
     description: ""
     parameters:
       branch:
         type: string
-        description: String key to store cache in
+        description: "String key to store cache in"
         default: "v1"
+      config_file:
+        type: string
+        description: "eDeliver configuration file"
+        default: ".deliver/config"
     steps:
+      - run: cp << parameters.config_file_path >> .deliver/config
       - run: mix edeliver build release --branch=<< parameters.branch >>
       - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
       - run: mix edeliver migrate --branch=<< parameters.branch >>
