@@ -230,10 +230,9 @@ commands:
       config_file_path:
         type: string
         description: "eDeliver configuration file"
-        default: ".deliver/config"
     steps:
-      - build
-      - run: cp ${CIRCLE_WORKING_DIRECTORY}/<< parameters.config_file_path >> .deliver/config
+      # This should never use default .deliver/config
+      - run: cp ${CIRCLE_WORKING_DIRECTORY}/<< parameters.config_file_path >> ${CIRCLE_WORKING_DIRECTORY}/.deliver/config
       - run: mix edeliver build release --branch=<< parameters.branch >>
       - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
       - run: mix edeliver migrate --branch=<< parameters.branch >>
