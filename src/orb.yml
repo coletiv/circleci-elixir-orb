@@ -28,7 +28,7 @@ examples:
             # Support multiple env deploy
             - elixir/deploy:
                 branch: develop
-                config_file: '.deliver/config_dev'
+                config_file_path: '.deliver/config_dev'
 
             - elixir/appsignal-send-marker:
                 api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
@@ -40,7 +40,7 @@ examples:
           steps:
             - elixir/deploy:
                 branch: master
-                config_file: '.deliver/config_prod'
+                config_file_path: '.deliver/config_prod'
 
             - elixir/appsignal-send-marker:
                 api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
@@ -229,7 +229,7 @@ commands:
         type: string
         description: "String key to store cache in"
         default: "v1"
-      config_file:
+      config_file_path:
         type: string
         description: "eDeliver configuration file"
         default: ".deliver/config"
