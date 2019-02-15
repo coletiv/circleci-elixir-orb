@@ -58,16 +58,12 @@ examples:
                       - develop
 
             - deploy-dev:
-                requires:
-                  - build-and-test
                 filters:
                   branches:
                     only:
                       - develop
 
             - deploy-prod:
-                required:
-                  - build-and-test
                 filters:
                   branches:
                     only:
