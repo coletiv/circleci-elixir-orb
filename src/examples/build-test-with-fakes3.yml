@@ -1,0 +1,68 @@
+description: "Build and test Elixir source code with FakeS3"
+usage:
+  orbs:
+    elixir: coletiv/elixir@0.0.8
+
+  executors:
+    default:
+      docker:
+        - image: circleci/elixir:1.6.5
+          environment:
+            MIX_ENV: test
+        - image: circleci/postgres:10.4-alpine-postgis-ram
+        - image: circleci/fakes3:0.2.4
+
+  version: 2.1
+  jobs:
+    build:
+      executor: default
+      steps:
+        - elixir/build:
+            cache-version: "v2"
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project
+              - .mix
+              - .hex
+              - .ssh
+
+    test:
+      executor: default
+      steps:
+        - attach_workspace:
+            at: ~/
+        - run: fakes3 -r $HOME/.s3bucket -p 4567 &
+        - elixir/coveralls
+
+    deploy-dev:
+      executor: default
+      steps:
+        - attach_workspace:
+            at: ~/
+        - elixir/deploy:
+            branch: develop
+            config_file_path: .deliver/config.dev
+
+  workflows:
+    version: 2
+    build-test-and-deploy-staging:
+      jobs:
+        - build
+
+        - test:
+            requires:
+              - build
+            filters:
+              branches:
+                ignore:
+                  - develop
+                  - master
+
+        - deploy-dev:
+            requires:
+              - build
+            filters:
+              branches:
+                only:
+                  - develop

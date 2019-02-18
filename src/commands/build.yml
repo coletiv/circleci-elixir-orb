@@ -1,0 +1,39 @@
+description: "Build Elixir source code"
+parameters:
+  cache-version:
+    type: string
+    description: "String key to store cache in"
+    default: "v1"
+steps:
+  - checkout
+
+  # Restore "deps" cache
+  - restore_cache:
+      keys:
+        - << parameters.cache-version >>-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+        - << parameters.cache-version >>-mix-cache-{{ .Branch }}
+        - << parameters.cache-version >>-mix-cache
+
+  # Restore "build" cache
+  - restore_cache:
+      keys:
+        - << parameters.cache-version >>-build-cache-{{ .Branch }}
+        - << parameters.cache-version >>-build-cache
+
+  - run: mix local.hex --force
+  - run: mix local.rebar --force
+
+  # NOTE: Mix will recompile Erlang files, even if we cache them:
+  # > https://elixirforum.com/t/how-to-cache-erlang-builds-on-ci/14789/15
+  - run: mix do deps.get, compile
+
+  # Cache "deps" folder
+  - save_cache:
+      key: << parameters.cache-version >>-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+      paths: "deps"
+  - save_cache:
+      key: << parameters.cache-version >>-mix-cache-{{ .Branch }}
+      paths: "deps"
+  - save_cache:
+      key: << parameters.cache-version >>-mix-cache
+      paths: "deps"

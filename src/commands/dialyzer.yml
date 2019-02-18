@@ -1,0 +1,22 @@
+description: "Static code analysis tool"
+parameters:
+  cache-version:
+    type: string
+    description: String key to store cache in
+    default: "v1"
+  format:
+    type: string
+    description: Formatting the errors
+    default: "short"
+steps:
+  # Restore Cache
+  - restore_cache:
+      keys:
+        - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+
+  - run: mix dialyzer --halt-exit-status --format << parameters.format >>
+
+  # Save Cache
+  - save_cache:
+      key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+      paths: "~/.mix"
