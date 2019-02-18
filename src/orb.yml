@@ -232,7 +232,7 @@ commands:
         description: "eDeliver configuration file"
     steps:
       # This should never use default .deliver/config
-      - run: cp ${OLDPWD}/<< parameters.config_file_path >> ${OLDPWD}/.deliver/config
+      - run: cp << parameters.config_file_path >> .deliver/config
       - run: mix edeliver build release --branch=<< parameters.branch >>
       - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
       - run: mix edeliver migrate --branch=<< parameters.branch >>
