@@ -1,0 +1,80 @@
+description: "Build, test and deploy an Elixir project"
+usage:
+  version: 2.1
+  orbs:
+    elixir: coletiv/elixir@0.0.8
+  jobs:
+    build-and-test:
+      executor: default
+      steps:
+        - elixir/build
+        - elixir/check-format
+        - elixir/coveralls
+        - elixir/credo
+        - elixir/dialyzer
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project
+              - .mix
+              - .hex
+              - .ssh
+
+    deploy-dev:
+      executor: default
+      steps:
+        - attach_workspace:
+            at: ~/
+
+        - elixir/deploy:
+            branch: develop
+            config_file_path: .deliver/config_dev
+
+        - elixir/appsignal-send-marker:
+            api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
+            name: "MyApp"
+            env: "dev"
+
+    deploy-prod:
+      executor: default
+      steps:
+        - attach_workspace:
+            at: ~/
+
+        - elixir/deploy:
+            branch: master
+            config_file_path: .deliver/config_prod
+
+        - elixir/appsignal-send-marker:
+            api_key: "f41a1e0d-f4fb-46e6-8518-3b326d06e419"
+            name: "MyApp"
+            env: "prod"
+
+  workflows:
+    elixir-build-deploy-example:
+      jobs:
+        - build
+        - test:
+            requires:
+              - build
+            filters:
+              branches:
+                ignore:
+                  - develop
+                  - master
+
+        - deploy-dev:
+            requires:
+              - build
+            filters:
+              branches:
+                only:
+                  - develop
+
+        - deploy-prod:
+            requires:
+              - build
+            filters:
+              branches:
+                only:
+                  - master

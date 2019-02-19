@@ -1,0 +1,25 @@
+# TODO: This seems to specific, maybe move to another orb ?
+
+description: "Notify AppSignal that a new version was deployed"
+parameters:
+  api_key:
+    type: string
+    description: AppSignal API Key
+  app_name:
+    type: string
+    description: Application name
+  env:
+    type: string
+    description: Environment
+    default: "dev"
+steps:
+  - run: |
+      curl -X POST \
+        "https://push.appsignal.com/1/markers?api_key=<< parameters.api_key >>&name=<< parameters.app_name >>&environment=<< parameters.env >>" \
+        -H 'cache-control: no-cache' \
+        -H 'content-type: application/json' \
+        -d "{
+        \"revision\":\"${CIRCLE_SHA1}\",
+        \"repository\":\"${CIRCLE_BRANCH}\",
+        \"user\":\"${CIRCLE_USERNAME}\"
+      }"
