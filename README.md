@@ -8,5 +8,5 @@ Learn more about [Orbs](https://github.com/CircleCI-Public/config-preview-sdk/bl
 
 Example configs:
 
-- [Example 1](src/example/build-test-deploy.yml) - Build, test and deploy using [edeliver](https://github.com/edeliver/edeliver).
-- [Example 2](src/example/build-test-with-fakes3.yml) - Build and test with FakeS3.
+- [Example 1](src/examples/build-test-deploy.yml) - Build, test and deploy using [edeliver](https://github.com/edeliver/edeliver).
+- [Example 2](src/examples/build-test-with-fakes3.yml) - Build and test with FakeS3.
