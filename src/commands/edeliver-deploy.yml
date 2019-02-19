@@ -1,6 +1,6 @@
 # TODO: Split this into another orb (elixir-deploy) ?
 # The following two commands are specific to edeliver deploy. Should be in another orb ?
-description: ""
+description: "Deploy using eDeliver"
 parameters:
   branch:
     type: string
@@ -11,19 +11,19 @@ parameters:
     description: "eDeliver configuration file"
   hotupgrade:
     type: boolean
-    description: If true, the release will be done without restarting the server.
+    description: "If true, the release will be done without restarting the server."
     default: false
 steps:
   # This should never use default .deliver/config
   - run: cp << parameters.config_file_path >> .deliver/config
   - when:
       condition: << parameters.hotupgrade >>
-        steps:
-          - run: mix edeliver upgrade --branch=<< parameters.branch >>
-          - run: mix edeliver migrate production --branch=<< parameters.branch >>
+      steps:
+        - run: mix edeliver upgrade --branch=<< parameters.branch >>
+        - run: mix edeliver migrate production --branch=<< parameters.branch >>
   - unless:
       condition: << parameters.hotupgrade >>
-        steps:
-          - run: mix edeliver build release --branch=<< parameters.branch >>
-          - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
-          - run: mix edeliver migrate --branch=<< parameters.branch >>
+      steps:
+        - run: mix edeliver build release --branch=<< parameters.branch >>
+        - run: mix edeliver deploy release --start-deploy --branch=<< parameters.branch >>
+        - run: mix edeliver migrate --branch=<< parameters.branch >>
