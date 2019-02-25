@@ -2,7 +2,7 @@ description: Build and test elixir source code
 executor: default
 parameters:
   coveralls:
-    description: Run tests using excoveralls for line coverage
+    description: Run tests using excoveralls for code coverage
     default: false
     type: boolean
   dialyzer:
