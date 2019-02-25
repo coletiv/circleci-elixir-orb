@@ -4,7 +4,7 @@ parameters:
   branch:
     description: Branch that to be deployed
     type: string
-  config_file:
+  config_file_path:
     description: Config file path
     type: string
   hotupgrade:

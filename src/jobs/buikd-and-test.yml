@@ -6,7 +6,7 @@ parameters:
     default: false
     type: boolean
   dialyzer:
-    description: The URL to link back to.
+    description: Run dialyzer
     default: false
     type: boolean
   credo:
@@ -20,22 +20,22 @@ parameters:
 steps:
   - build
   - when:
-      condition: <<parameters.check-format>>
+      condition: << parameters.check-format >>
       steps:
         - check-format
   - when:
-      condition: <<parameters.credo>>
+      condition: << parameters.credo >>
       steps:
         - credo
   - when:
-      condition: <<parameters.coveralls>>
+      condition: << parameters.coveralls >>
       steps:
         - coveralls
   - unless:
-      condition: <<parameters.coveralls>>
+      condition: << parameters.coveralls >>
       steps:
         - test
   - when:
-      condition: <<parameters.dialyzer>>
+      condition: << parameters.dialyzer >>
       steps:
         - dialyzer
