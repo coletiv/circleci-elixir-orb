@@ -1,6 +1,5 @@
 .DS_Store
 _build/
-config/
 deps/
 packed/
 validate.sh
