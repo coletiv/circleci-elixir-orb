@@ -1,0 +1,41 @@
+description: Build and test elixir source code
+executor: default
+parameters:
+  coveralls:
+    description: Run tests using excoveralls for line coverage
+    default: false
+    type: boolean
+  dialyzer:
+    description: The URL to link back to.
+    default: false
+    type: boolean
+  credo:
+    description: Run credo
+    default: false
+    type: boolean
+  check-format:
+    description: Check code format
+    default: false
+    type: boolean
+steps:
+  - build
+  - when:
+      condition: <<parameters.check-format>>
+      steps:
+        - check-format
+  - when:
+      condition: <<parameters.credo>>
+      steps:
+        - credo
+  - when:
+      condition: <<parameters.coveralls>>
+      steps:
+        - coveralls
+  - unless:
+      condition: <<parameters.coveralls>>
+      steps:
+        - test
+  - when:
+      condition: <<parameters.dialyzer>>
+      steps:
+        - dialyzer

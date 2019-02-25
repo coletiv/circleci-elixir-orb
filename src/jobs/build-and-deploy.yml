@@ -1,0 +1,19 @@
+description: Build and deploy elixir source code
+executor: default
+parameters:
+  branch:
+    description: Branch that to be deployed
+    type: string
+  config_file:
+    description: Config file path
+    type: string
+  hotupgrade:
+    description: Deploy without restarting the service
+    type: boolean
+    default: false
+steps:
+  - build
+  - edeliver-deploy:
+      branch: << parameters.branch >>
+      config_file_path: << parameters.config_file_path >>
+      hotupgrade: << parameters.hotupgrade >>
