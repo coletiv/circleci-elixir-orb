@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   orb-tools: circleci/orb-tools@2
+  elixir: coletiv/elixir@dev:master
 workflows:
   btd:
     jobs:
@@ -19,6 +20,13 @@ workflows:
           checkout: false
           requires: [orb-tools/pack]
 
+      - elixir/build-and-test:
+          credo: true
+          check-format: true
+          coveralls: true
+          dialyzer: true
+          requires: [orb-tools/publish]
+
       - orb-tools/increment:
           orb-path: packed/orb.yml
           orb-ref: "coletiv/elixir"
@@ -26,7 +34,7 @@ workflows:
           publish-token-variable: "$CIRCLECI_API_TOKEN"
           attach-workspace: true
           checkout: false
-          requires: [orb-tools/pack]
+          requires: [elixir/build-and-test]
           filters:
             branches:
               only: master
