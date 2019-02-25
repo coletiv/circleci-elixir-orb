@@ -2,7 +2,7 @@ description: Build and deploy elixir source code
 executor: default
 parameters:
   branch:
-    description: Branch that to be deployed
+    description: Branch to be deployed
     type: string
   config_file_path:
     description: Config file path
