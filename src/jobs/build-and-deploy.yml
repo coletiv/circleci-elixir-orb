@@ -1,6 +1,10 @@
 description: Build and deploy elixir source code
 executor: default
 parameters:
+  executor:
+    description: Executor to be used in this job
+    type: executor
+    default: default
   branch:
     description: Branch to be deployed
     type: string
@@ -11,6 +15,7 @@ parameters:
     description: Deploy without restarting the service
     type: boolean
     default: false
+executor: << parameters.executor >>
 steps:
   - build
   - edeliver-deploy:
