@@ -1,6 +1,10 @@
 description: Build and test elixir source code
 executor: default
 parameters:
+  executor:
+    description: Executor to be used in this job
+    type: executor
+    default: default
   coveralls:
     description: Run tests using excoveralls for code coverage
     default: false
@@ -17,6 +21,7 @@ parameters:
     description: Check code format
     default: false
     type: boolean
+executor: << parameters.executor >>
 steps:
   - build
   - when:
