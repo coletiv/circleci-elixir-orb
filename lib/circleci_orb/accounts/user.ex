@@ -7,10 +7,10 @@ defmodule CircleciOrb.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
-    field :is_admin, :boolean, default: false
-    field :name, :string
-    field :password_hash, :string
+    field(:email, :string)
+    field(:is_admin, :boolean, default: false)
+    field(:name, :string)
+    field(:password_hash, :string)
 
     timestamps()
   end

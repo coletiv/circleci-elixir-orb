@@ -4,7 +4,7 @@ defmodule CircleciOrbWeb.PostController do
   alias CircleciOrb.Posts
   alias CircleciOrb.Posts.Post
 
-  action_fallback CircleciOrbWeb.FallbackController
+  action_fallback(CircleciOrbWeb.FallbackController)
 
   def index(conn, _params) do
     posts = Posts.list_posts()

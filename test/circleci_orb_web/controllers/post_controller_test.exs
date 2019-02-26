@@ -98,9 +98,9 @@ defmodule CircleciOrbWeb.PostControllerTest do
       conn = delete(conn, Routes.post_path(conn, :delete, post))
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent(404, fn ->
         get(conn, Routes.post_path(conn, :show, post))
-      end
+      end)
     end
   end
 

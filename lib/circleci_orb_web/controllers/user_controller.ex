@@ -4,7 +4,7 @@ defmodule CircleciOrbWeb.UserController do
   alias CircleciOrb.Accounts
   alias CircleciOrb.Accounts.User
 
-  action_fallback CircleciOrbWeb.FallbackController
+  action_fallback(CircleciOrbWeb.FallbackController)
 
   def index(conn, _params) do
     users = Accounts.list_users()

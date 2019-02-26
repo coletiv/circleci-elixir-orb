@@ -7,8 +7,8 @@ defmodule CircleciOrb.Posts.Post do
   import Ecto.Changeset
 
   schema "posts" do
-    field :content, :string
-    field :title, :string
+    field(:content, :string)
+    field(:title, :string)
     belongs_to(:user, CircleciOrb.Accounts.User)
 
     timestamps()
