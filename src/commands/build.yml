@@ -17,6 +17,7 @@ steps:
   # Restore "build" cache
   - restore_cache:
       keys:
+        - << parameters.cache-version >>-build-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
         - << parameters.cache-version >>-build-cache-{{ .Branch }}
         - << parameters.cache-version >>-build-cache
 
@@ -37,3 +38,12 @@ steps:
   - save_cache:
       key: << parameters.cache-version >>-mix-cache
       paths: "deps"
+  - save_cache:
+      key: << parameters.cache-version >>-build-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+      paths: "_build"
+  - save_cache:
+      key: << parameters.cache-version >>-build-cache-{{ .Branch }}
+      paths: "_build"
+  - save_cache:
+      key: << parameters.cache-version >>-build-cache
+      paths: "_build"
