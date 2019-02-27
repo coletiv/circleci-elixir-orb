@@ -14,13 +14,23 @@ steps:
       keys:
         - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
         - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+        - << parameters.cache-version >>-local_mix-cache
 
   - run: mix dialyzer --halt-exit-status --format << parameters.format >>
 
   # Save Cache
   - save_cache:
       key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
-      paths: "~/.mix"
+      paths:
+        - "~/.mix"
+        - "_build"
   - save_cache:
       key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
-      paths: "~/.mix"
+      paths:
+        - "~/.mix"
+        - "_build"
+  - save_cache:
+      key: << parameters.cache-version >>-local_mix-cache
+      paths:
+        - "~/.mix"
+        - "_build"
