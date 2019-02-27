@@ -2,16 +2,12 @@ description: "Build, test and deploy an Elixir project"
 usage:
   version: 2.1
   orbs:
-    elixir: coletiv/elixir@0.0.8
+    elixir: coletiv/elixir@0.0.14
   jobs:
-    build-and-test:
+    build:
       executor: default
       steps:
         - elixir/build
-        - elixir/check-format
-        - elixir/coveralls
-        - elixir/credo
-        - elixir/dialyzer
         - persist_to_workspace:
             root: ~/
             paths:
@@ -19,6 +15,13 @@ usage:
               - .mix
               - .hex
               - .ssh
+    test:
+      executor: default
+      steps:
+        - elixir/check-format
+        - elixir/coveralls
+        - elixir/credo
+        - elixir/dialyzer
 
     deploy-dev:
       executor: default
