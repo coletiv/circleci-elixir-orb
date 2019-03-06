@@ -20,7 +20,7 @@ steps:
       condition: << parameters.hotupgrade >>
       steps:
         - run: mix edeliver upgrade --branch=<< parameters.branch >>
-        - run: mix edeliver migrate production --branch=<< parameters.branch >>
+        - run: mix edeliver migrate --branch=<< parameters.branch >>
   - unless:
       condition: << parameters.hotupgrade >>
       steps:
