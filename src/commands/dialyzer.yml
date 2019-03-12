@@ -9,6 +9,7 @@ parameters:
     description: Formatting the errors
     default: "short"
 steps:
+  - run: printenv
   # Restore Cache
   - restore_cache:
       keys:
