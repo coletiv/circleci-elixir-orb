@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   orb-tools: circleci/orb-tools@2
-  elixir: coletiv/elixir@dev:master
+  elixir: coletiv/elixir@dev:latest
 workflows:
   btd:
     jobs:
@@ -14,7 +14,7 @@ workflows:
 
       - orb-tools/publish:
           orb-path: packed/orb.yml
-          orb-ref: "coletiv/elixir@dev:${CIRCLE_BRANCH}"
+          orb-ref: "coletiv/elixir@dev:latest"
           publish-token-variable: "$CIRCLECI_API_TOKEN"
           attach-workspace: true
           checkout: false
