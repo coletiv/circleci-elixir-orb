@@ -45,7 +45,7 @@ workflows:
           publish-token-variable: "$CIRCLECI_API_TOKEN"
           attach-workspace: true
           checkout: false
-          requires: [elixir/publish]
+          requires: [orb-tools/publish]
           filters:
             branches:
               only: master
