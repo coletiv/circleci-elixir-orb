@@ -2,7 +2,7 @@ description: "Static code analysis tool"
 parameters:
   cache-version:
     type: string
-    description: String key to store cache in
+    description: String key to store cache
     default: "v1"
   format:
     type: string
