@@ -40,7 +40,7 @@ usage:
       steps:
         - attach_workspace:
             at: ~/
-        - elixir/deploy:
+        - elixir/edeliver-deploy:
             branch: develop
             config_file_path: .deliver/config.dev
 

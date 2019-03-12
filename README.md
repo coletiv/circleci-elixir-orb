@@ -1,4 +1,4 @@
-# Elixir Orb
+# Elixir Orb ![CircleCI status](https://circleci.com/gh/coletiv/circleci-elixir-orb.svg "CircleCI status") [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/coletiv/elixir)](https://circleci.com/orbs/registry/orb/coletiv/elixir)
 
 Easily integrate custom [Elixir](https://elixir-lang.org) builds and deploys into your [CircleCI](https://circleci.com/ "CircleCI") projects. You can visit this Orb on CircleCI Orbs repository [here](https://circleci.com/orbs/registry/orb/coletiv/elixir).
 
