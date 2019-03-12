@@ -11,27 +11,28 @@ parameters:
 steps:
   - run: printenv
   # Restore Cache
+  # NOTE: Dialyzer cache should be invalidated if Elixir or OTP version change
   - restore_cache:
       keys:
-        - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
-        - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
-        - << parameters.cache-version >>-local_mix-cache
+        - << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}-{{ .Branch }}-{{ checksum "mix.lock" }}
+        - << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}-{{ .Branch }}
+        - << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}
 
   - run: mix dialyzer --halt-exit-status --format << parameters.format >>
 
   # Save Cache
   - save_cache:
-      key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+      key: << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}-{{ .Branch }}-{{ checksum "mix.lock" }}
       paths:
         - "~/.mix"
         - "_build"
   - save_cache:
-      key: << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
+      key: << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}-{{ .Branch }}
       paths:
         - "~/.mix"
         - "_build"
   - save_cache:
-      key: << parameters.cache-version >>-local_mix-cache
+      key: << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}
       paths:
         - "~/.mix"
         - "_build"
