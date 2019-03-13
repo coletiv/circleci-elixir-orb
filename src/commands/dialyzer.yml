@@ -2,7 +2,7 @@ description: "Static code analysis tool"
 parameters:
   cache-version:
     type: string
-    description: String key to store cache in
+    description: String key to store cache
     default: "v1"
   format:
     type: string
@@ -14,7 +14,7 @@ steps:
       keys:
         - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
         - << parameters.cache-version >>-local_mix-cache-{{ .Branch }}
-        - << parameters.cache-version >>-local_mix-cache
+        - << parameters.cache-version >>-local_mix-cache-
 
   - run: mix dialyzer --halt-exit-status --format << parameters.format >>
 
