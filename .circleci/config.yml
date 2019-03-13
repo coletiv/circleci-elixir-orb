@@ -34,8 +34,9 @@ workflows:
             - orb-tools/lint
 
       - orb-tools/publish-dev:
+          orb-name: coletiv/elixir
           orb-path: packed/orb.yml
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
+          publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: [orb-tools/pack]
 
       - orb-tools/trigger-integration-workflow:
@@ -50,7 +51,6 @@ workflows:
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-master
-          context: orb-publishing
           ssh-fingerprints: 93:72:14:95:25:37:b9:b9:34:6a:52:f0:6d:3c:8e:30
           tag: master
           requires:
