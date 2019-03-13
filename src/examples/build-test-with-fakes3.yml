@@ -1,7 +1,7 @@
 description: "Build and test Elixir source code with FakeS3"
 usage:
   orbs:
-    elixir: coletiv/elixir@0.0.14
+    elixir: coletiv/elixir@0.0.22
 
   executors:
     default:
