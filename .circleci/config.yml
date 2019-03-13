@@ -1,58 +1,109 @@
 version: 2.1
 
+integration-dev_filters: &integration-dev_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /integration-.*/
+
+integration-master_filters: &integration-master_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /master-.*/
+
+prod-deploy_requires: &prod-deploy_requires
+  [test-orb-elixir_master]
+
 orbs:
-  orb-tools: circleci/orb-tools@2
+  orb-tools: circleci/orb-tools@8.3.0
   elixir: coletiv/elixir@dev:alpha
 workflows:
-  btd:
+  lint_pack-validate_publish-dev:
     jobs:
+      - orb-tools/lint
+
       - orb-tools/pack:
           source-dir: src/
           destination-orb-path: packed/orb.yml
           workspace-path: packed/orb.yml
           artifact-path: packed/orb.yml
+          requires:
+            - orb-tools/lint
 
-      - orb-tools/publish:
-          name: "publish-dev"
+      - orb-tools/publish-dev:
+          orb-name: coletiv/elixir
           orb-path: packed/orb.yml
-          orb-ref: "coletiv/elixir@dev:alpha"
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
-          attach-workspace: true
-          checkout: false
+          workspace-root: .
+          publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: [orb-tools/pack]
+
+      - orb-tools/trigger-integration-workflow:
+          name: trigger-integration-dev
+          ssh-fingerprints: 93:72:14:95:25:37:b9:b9:34:6a:52:f0:6d:3c:8e:30
+          requires:
+            - orb-tools/publish-dev
           filters:
             branches:
               ignore: master
+
+      - orb-tools/trigger-integration-workflow:
+          name: trigger-integration-master
+          ssh-fingerprints: 93:72:14:95:25:37:b9:b9:34:6a:52:f0:6d:3c:8e:30
+          tag: master
+          requires:
+            - orb-tools/publish-dev
+          filters:
+            branches:
+              only: master
+
+  integration-tests_prod-deploy:
+    jobs:
+      - elixir/build-and-test:
+          credo: true
+          check-format: true
+          coveralls: true
+          dialyzer: true
+          name: test-orb-elixir_dev
+          filters: *integration-dev_filters
 
       - elixir/build-and-test:
           credo: true
           check-format: true
           coveralls: true
           dialyzer: true
-          requires: [publish-dev]
-          filters:
-            branches:
-              ignore: master
+          name: test-orb-elixir_master
+          filters: *integration-master_filters
 
-      - orb-tools/publish:
-          orb-path: packed/orb.yml
-          orb-ref: "coletiv/elixir@dev:${CIRCLE_BRANCH}"
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
-          attach-workspace: true
-          checkout: false
-          requires: [orb-tools/pack]
+      # patch, minor, or major publishing
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-patch
+          orb-name: coletiv/elixir
+          requires: *prod-deploy_requires
           filters:
             branches:
-              only: master
+              ignore: /.*/
+            tags:
+              only: /master-patch.*/
 
-      - orb-tools/increment:
-          orb-path: packed/orb.yml
-          orb-ref: "coletiv/elixir"
-          segment: "patch"
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
-          attach-workspace: true
-          checkout: false
-          requires: [orb-tools/publish]
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-minor
+          orb-name: coletiv/elixir
+          release: minor
+          requires: *prod-deploy_requires
           filters:
             branches:
-              only: master
+              ignore: /.*/
+            tags:
+              only: /master-minor.*/
+
+      - orb-tools/dev-promote-prod:
+          name: dev-promote-major
+          orb-name: coletiv/elixir
+          release: major
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-major.*/
