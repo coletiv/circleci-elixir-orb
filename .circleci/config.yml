@@ -24,8 +24,6 @@ workflows:
       - orb-tools/lint
 
       - orb-tools/pack:
-          attach-workspace: true
-          checkout: false
           source-dir: src/
           destination-orb-path: packed/orb.yml
           workspace-path: packed/orb.yml
