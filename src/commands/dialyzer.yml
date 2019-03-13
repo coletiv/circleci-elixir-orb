@@ -9,7 +9,6 @@ parameters:
     description: Formatting the errors
     default: "short"
 steps:
-  - run: printenv
   # Restore Cache
   # NOTE: Dialyzer cache should be invalidated if Elixir or OTP version change
   - restore_cache:
@@ -22,7 +21,7 @@ steps:
 
   # Save Cache
   - save_cache:
-      key: << parameters.cache-version >>-local_mix-cache-{{ .Environment.ELIXIR_VERSION }}-{{ .Environment.OTP_VERSION }}-{{ .Branch }}-{{ checksum "mix.lock" }}
+      key: << parameters.cache-version >>-local_mix-cache-{{ echo $ELIXIR_VERSION }}-{{ echo $OTP_VERSION }}-{{ .Branch }}-{{ checksum "mix.lock" }}
       paths:
         - "~/.mix"
         - "_build"
