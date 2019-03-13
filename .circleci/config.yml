@@ -16,7 +16,7 @@ prod-deploy_requires: &prod-deploy_requires
   [test-orb-elixir_master]
 
 orbs:
-  orb-tools: circleci/orb-tools@2
+  orb-tools: circleci/orb-tools@8.3.0
   elixir: coletiv/elixir@dev:alpha
 workflows:
   lint_pack-validate_publish-dev:
