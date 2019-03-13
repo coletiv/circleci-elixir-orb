@@ -1,22 +1,41 @@
 description: Build and deploy elixir source code
 parameters:
-  executor:
-    description: Executor to be used in this job
-    type: executor
-    default: default
+  build:
+    default: true
+    description: Run build of Elixir project
+    type: boolean
+  attach-workspace:
+    default: false
+    description: >
+      Boolean for whether or not to attach to an existing workspace. Default is
+      false.
+    type: boolean
   branch:
+    default: master
     description: Branch to be deployed
     type: string
   config_file_path:
     description: Config file path
     type: string
+  executor:
+    default: default
+    description: Executor to be used in this job
+    type: executor
   hotupgrade:
+    default: false
     description: Deploy without restarting the service
     type: boolean
-    default: false
 executor: << parameters.executor >>
 steps:
-  - build
+  - when:
+      condition: << parameters.attach-workspace >>
+      steps:
+        - attach_workspace:
+            at: ~/
+  - when:
+      condition: << parameters.build >>
+      steps:
+        - build
   - edeliver-deploy:
       branch: << parameters.branch >>
       config_file_path: << parameters.config_file_path >>

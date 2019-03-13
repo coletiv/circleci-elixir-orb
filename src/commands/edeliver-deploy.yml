@@ -4,8 +4,8 @@ description: "Deploy using eDeliver"
 parameters:
   branch:
     type: string
-    description: "String key to store cache in"
-    default: "v1"
+    description: "Branch to be used to deploy"
+    default: "master"
   config_file_path:
     type: string
     description: "eDeliver configuration file"

@@ -1,8 +1,30 @@
 description: "Test Elixir code coverage"
+  parameters:
+    json:
+      default: false
+      description: "Output format"
+      type: boolean
+    execute_comand_after:
+      default: ""
+      description: "If you want to do something with the json output"
+      type: string
 steps:
   - run:
       name: Wait for DB
       command: dockerize -wait tcp://localhost:5432 -timeout 1m
-  - run:
-      name: Execute tests
-      command: mix coveralls
+  - when:
+      condition: << parameters.json >>
+      steps:
+        - run:
+            name: Execute tests
+            command: mix coveralls.json
+  - unless:
+      condition: << parameters.json >>
+      steps:
+        - run:
+            name: Execute tests
+            command: mix coveralls
+  - when:
+      condition: << parameters.execute_command_after >>
+      steps:
+        - run: << parameters.execute_command_after >>

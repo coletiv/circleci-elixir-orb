@@ -20,6 +20,10 @@ parameters:
     description: Check code format
     default: false
     type: boolean
+  persist-to-workspace:
+    default: true
+    description: Should this job persist files to a workspace? Defaults to true
+    type: boolean
 executor: << parameters.executor >>
 steps:
   - build
@@ -43,3 +47,13 @@ steps:
       condition: << parameters.dialyzer >>
       steps:
         - dialyzer
+  - when:
+      condition: << parameters.persist-to-workspace >>
+      steps:
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+            - .mix
+            - .hex
+            - .ssh
