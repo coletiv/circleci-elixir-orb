@@ -79,6 +79,7 @@ workflows:
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
           orb-name: coletiv/elixir
+          publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -90,6 +91,7 @@ workflows:
           name: dev-promote-minor
           orb-name: coletiv/elixir
           release: minor
+          publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -101,6 +103,7 @@ workflows:
           name: dev-promote-major
           orb-name: coletiv/elixir
           release: major
+          publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: *prod-deploy_requires
           filters:
             branches:
