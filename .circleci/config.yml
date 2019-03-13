@@ -36,6 +36,7 @@ workflows:
           orb-path: packed/orb.yml
           attach-workspace: true
           checkout: false
+          workspace-root: .
           publish-token-variable: "CIRCLECI_API_TOKEN"
           requires: [orb-tools/pack]
 
