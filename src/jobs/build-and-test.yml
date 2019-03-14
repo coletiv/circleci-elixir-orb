@@ -38,8 +38,7 @@ steps:
   - when:
       condition: << parameters.coveralls >>
       steps:
-        - coveralls:
-            execute_comand_after: ""
+        - coveralls
   - unless:
       condition: << parameters.coveralls >>
       steps:

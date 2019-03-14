@@ -4,7 +4,7 @@ parameters:
     default: false
     description: "Output format"
     type: boolean
-  execute_comand_after:
+  execute_command_after:
     default: ""
     description: "If you want to do something with the json output"
     type: string
