@@ -14,7 +14,8 @@ parameters:
     type: boolean
 executor: << parameters.executor >>
 steps:
-  - build
+  - build:
+      cache-version: << parameters.cache-version >>
   - when:
       condition: << parameters.persist-to-workspace >>
       steps:
