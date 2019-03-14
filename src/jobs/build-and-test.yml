@@ -50,10 +50,10 @@ steps:
   - when:
       condition: << parameters.persist-to-workspace >>
       steps:
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project
-            - .mix
-            - .hex
-            - .ssh
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project
+              - .mix
+              - .hex
+              - .ssh

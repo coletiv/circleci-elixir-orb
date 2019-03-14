@@ -1,13 +1,13 @@
 description: "Test Elixir code coverage"
-  parameters:
-    json:
-      default: false
-      description: "Output format"
-      type: boolean
-    execute_comand_after:
-      default: ""
-      description: "If you want to do something with the json output"
-      type: string
+parameters:
+  json:
+    default: false
+    description: "Output format"
+    type: boolean
+  execute_comand_after:
+    default: ""
+    description: "If you want to do something with the json output"
+    type: string
 steps:
   - run:
       name: Wait for DB

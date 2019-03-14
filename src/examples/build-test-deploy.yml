@@ -9,16 +9,16 @@ usage:
     build-test-deploy-dev:
       jobs:
         - elixir/build-and-test:
-           check-format: true
-           credo: true
-           coveralls: true
-           dialyzer: true
-           persist-to-workspace: true
-           filters:
-             branches:
-               ignore:
-                 - develop
-                 - master
+            check-format: true
+            credo: true
+            coveralls: true
+            dialyzer: true
+            persist-to-workspace: true
+            filters:
+              branches:
+                ignore:
+                  - develop
+                  - master
 
         - elixir/build-and-deploy:
             attach-workspace: true
