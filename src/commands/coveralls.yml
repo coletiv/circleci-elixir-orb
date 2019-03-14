@@ -4,10 +4,6 @@ parameters:
     default: false
     description: "Output format"
     type: boolean
-  execute_command_after:
-    default: ""
-    description: "If you want to do something with the json output"
-    type: string
 steps:
   - run:
       name: Wait for DB
@@ -16,15 +12,10 @@ steps:
       condition: << parameters.json >>
       steps:
         - run:
-            name: Execute tests
+            description: Execute tests with output in json file
             command: mix coveralls.json
   - unless:
       condition: << parameters.json >>
       steps:
         - run:
-            name: Execute tests
             command: mix coveralls
-  - when:
-      condition: << parameters.execute_command_after >>
-      steps:
-        - run: << parameters.execute_command_after >>

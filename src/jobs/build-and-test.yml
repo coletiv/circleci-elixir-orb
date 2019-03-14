@@ -12,6 +12,10 @@ parameters:
     description: Run tests using excoveralls for code coverage
     default: false
     type: boolean
+  coveralls_json:
+    default: false
+    description: Define if a json files must be generate when running coveralls
+    type: boolean
   credo:
     description: Run credo
     default: false
@@ -43,7 +47,8 @@ steps:
   - when:
       condition: << parameters.coveralls >>
       steps:
-        - coveralls
+        - coveralls:
+            json: << parameters.coveralls_json >>
   - unless:
       condition: << parameters.coveralls >>
       steps:
