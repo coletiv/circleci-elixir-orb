@@ -1,28 +1,41 @@
 description: Build and test elixir source code
 parameters:
-  executor:
-    description: Executor to be used in this job
-    type: executor
-    default: default
+  cache-version:
+    type: string
+    description: "String key to store cache in"
+    default: "v1"
+  check-format:
+    description: Check code format
+    default: false
+    type: boolean
   coveralls:
     description: Run tests using excoveralls for code coverage
+    default: false
+    type: boolean
+  coveralls_json:
+    default: false
+    description: Define if a json files must be generate when running coveralls
+    type: boolean
+  credo:
+    description: Run credo
     default: false
     type: boolean
   dialyzer:
     description: Run dialyzer
     default: false
     type: boolean
-  credo:
-    description: Run credo
-    default: false
-    type: boolean
-  check-format:
-    description: Check code format
-    default: false
+  executor:
+    description: Executor to be used in this job
+    type: executor
+    default: default
+  persist-to-workspace:
+    default: true
+    description: Should this job persist files to a workspace? Defaults to true
     type: boolean
 executor: << parameters.executor >>
 steps:
-  - build
+  - build:
+      cache-version: << parameters.cache-version >>
   - when:
       condition: << parameters.check-format >>
       steps:
@@ -34,7 +47,8 @@ steps:
   - when:
       condition: << parameters.coveralls >>
       steps:
-        - coveralls
+        - coveralls:
+            json: << parameters.coveralls_json >>
   - unless:
       condition: << parameters.coveralls >>
       steps:
@@ -43,3 +57,13 @@ steps:
       condition: << parameters.dialyzer >>
       steps:
         - dialyzer
+  - when:
+      condition: << parameters.persist-to-workspace >>
+      steps:
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project
+              - .mix
+              - .hex
+              - .ssh

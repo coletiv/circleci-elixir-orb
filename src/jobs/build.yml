@@ -1,0 +1,28 @@
+description: Build elixir source code
+parameters:
+  executor:
+    description: Executor to be used in this job
+    type: executor
+    default: default
+  cache-version:
+    type: string
+    description: "String key to store cache in"
+    default: "v1"
+  persist-to-workspace:
+    default: true
+    description: Should this job persist files to a workspace? Defaults to true
+    type: boolean
+executor: << parameters.executor >>
+steps:
+  - build:
+      cache-version: << parameters.cache-version >>
+  - when:
+      condition: << parameters.persist-to-workspace >>
+      steps:
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project
+              - .mix
+              - .hex
+              - .ssh
