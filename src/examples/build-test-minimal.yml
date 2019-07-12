@@ -2,7 +2,7 @@ description: "Build and test with the minimal configuration an Elixir project"
 usage:
   version: 2.1
   orbs:
-    elixir: coletiv/elixir@0.0.22
+    elixir: coletiv/elixir@0.1.0
   workflows:
     elixir-build-test-minimal:
       jobs:

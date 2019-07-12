@@ -29,8 +29,8 @@ usage:
               - elixir/build-and-test
             filters:
               branches:
-                ignore:
-                  - master
+                only:
+                  - develop
 
     build-deploy-prod:
       jobs:
