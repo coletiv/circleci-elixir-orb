@@ -3,7 +3,7 @@ usage:
   version: 2.1
 
   orbs:
-    elixir: coletiv/elixir@0.0.22
+    elixir: coletiv/elixir@0.1.0
 
   workflows:
     build-test-deploy-dev:
@@ -34,7 +34,7 @@ usage:
 
     build-deploy-prod:
       jobs:
-        - build-and-deploy:
+        - elixir/build-and-deploy:
             name: "deploy-prod"
             attach-workspace: true
             build: false
