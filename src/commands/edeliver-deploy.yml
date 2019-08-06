@@ -13,9 +13,17 @@ parameters:
     type: boolean
     description: "If true, the release will be done without restarting the server."
     default: false
+  digest:
+    type: boolean
+    description: "Digests and compresses static files."
+    default: false
 steps:
   # This should never use default .deliver/config
   - run: cp << parameters.config_file_path >> .deliver/config
+  - when:
+      condition: << parameters.digest >>
+      steps:
+        - run: mix phx.digest
   - when:
       condition: << parameters.hotupgrade >>
       steps:
