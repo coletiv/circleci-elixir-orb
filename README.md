@@ -2,7 +2,7 @@
 
 Easily integrate custom [Elixir](https://elixir-lang.org) builds and deploys into your [CircleCI](https://circleci.com/ "CircleCI") projects. You can visit this Orb on CircleCI Orbs repository [here](https://circleci.com/orbs/registry/orb/coletiv/elixir).
 
-Learn more about [Orbs](https://github.com/CircleCI-Public/config-preview-sdk/blob/master/docs/using-orbs.md "orb").
+Learn more about [Orbs](https://circleci.com/docs/2.0/orb-intro/).
 
 ## Usage
 
